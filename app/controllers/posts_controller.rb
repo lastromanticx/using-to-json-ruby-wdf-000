@@ -6,10 +6,16 @@ class PostsController < ApplicationController
   end
 
   def show
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @post.to_json(only: [:title, :description, :id],
+        include: [author: { only: [:name]}]) }
+    end
   end
 
   def new
     @post = Post.new
+    @submit_text = "Submit Post"
   end
 
   def create
@@ -19,6 +25,8 @@ class PostsController < ApplicationController
   end
 
   def edit
+    @post = Post.find(params[:id])
+    @submit_text = "Update Post"
   end
 
   def update
@@ -28,7 +36,8 @@ class PostsController < ApplicationController
 
   def post_data
     post = Post.find(params[:id])
-    render json: PostSerializer.serialize(post)
+    render json: post.to_json(only: [:title, :description, :id],
+      include: [ author: { only: [:name]}])
   end
 
 private
